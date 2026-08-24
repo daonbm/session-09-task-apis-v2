@@ -1,10 +1,16 @@
-# Stage 1: Build the application using Gradle
+# Stage 1: Create MySQL database with mock data
+FROM mysql:8.0 AS mysql-db
+ENV MYSQL_ROOT_PASSWORD=root
+ENV MYSQL_DATABASE=taskdb
+COPY src/main/resources/db/taskdb.sql /docker-entrypoint-initdb.d/
+
+# Stage 2: Build the application using Gradle
 FROM gradle:8.5-jdk21 AS build
 WORKDIR /app
 COPY --chown=gradle:gradle . .
 RUN ./gradlew bootJar -x test --no-daemon
 
-# Stage 2: Run the application
+# Stage 3: Run the application
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
