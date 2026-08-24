@@ -8,6 +8,7 @@ COPY src/main/resources/db/taskdb.sql /docker-entrypoint-initdb.d/
 FROM gradle:8.5-jdk21 AS build
 WORKDIR /app
 COPY --chown=gradle:gradle . .
+RUN chmod +x gradlew
 RUN ./gradlew bootJar -x test --no-daemon
 
 # Stage 3: Run the application
