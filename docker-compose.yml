@@ -5,7 +5,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: task-app-v2
+    container_name: task-app
     restart: always
     ports:
-      - "8080:8080"
+      - "8085:8085"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-server:3306/taskdb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+
+volumes:
+  db-data:

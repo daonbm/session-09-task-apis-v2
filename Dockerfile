@@ -1,24 +1,13 @@
-# Stage 1: Build the application using Gradle
-FROM gradle:8.5-jdk21 AS build
-WORKDIR /app
-COPY --chown=gradle:gradle . .
-RUN chmod +x gradlew
-RUN ./gradlew bootJar -x test --no-daemon
-
-# Stage 2: Run the application
-FROM eclipse-temurin:21-jre-alpine
+# một stage: vừa build vừa chạy
+FROM eclipse-temurin:21-jdk
 WORKDIR /app
 
-# Copy the built jar from the build stage
-COPY --from=build /app/build/libs/*.jar app.jar
+COPY .gradle/ .gradle
+COPY ./gradlew build.gradle ./
+RUN ./gradlew dependencies --no-daemon
+COPY src ./src
+RUN ./gradlew clean build -x test --no-daemon
+EXPOSE 8085
 
-# Expose the API port
-EXPOSE 8080
-
-# Environment variables for MySQL connection (can be overridden at runtime)
-ENV SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/taskdb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-ENV SPRING_DATASOURCE_USERNAME=root
-ENV SPRING_DATASOURCE_PASSWORD=root
-
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java","-jar","libs/session-09-task-apis-v2-0.0.1-SNAPSHOT.jar"]
 
